@@ -15,7 +15,7 @@
     "path": "^0.12.7"
   },
   "scripts": {
-    "start": "nodemon server2.js" 
+    "start": "nodemon server.js" 
   },
   "name": "nodejs",
   "version": "1.0.0",

@@ -55,10 +55,12 @@ app.post('/login', async(req, res) => {
 });
 
 app.get('/list', async (req, res) => {
-  const { keyword, grade } = req.query;
+  const { keyword, grade , orderName, orderKind} = req.query;
   try {
     const result = await connection.execute(
-      `SELECT * FROM STUDENT WHERE (STU_NAME LIKE '%${keyword}%' OR STU_NO LIKE '%${keyword}%') AND STU_GRADE LIKE '%${grade}%'`);
+      `SELECT * FROM STUDENT 
+      WHERE (STU_NAME LIKE '%${keyword}%' OR STU_NO LIKE '%${keyword}%') AND STU_GRADE LIKE '%${grade}%'
+      ORDER BY ${orderName} ${orderKind}`);
     const columnNames = result.metaData.map(column => column.name);
     // 쿼리 결과를 JSON 형태로 변환
     const rows = result.rows.map(row => {
@@ -80,7 +82,7 @@ app.get('/delete', async (req, res) => {
   const { stuNo } = req.query;
   try {
     await connection.execute(
-      `DELETE FROM STUDENT WHERE STU_NO = '${stuNo}'`, [], { autoCommit: true }
+      `DELETE FROM STUDENT WHERE STU_NO IN (${stuNo})`, [], { autoCommit: true }
     );
    
     res.json([{message : "삭제되었습니다"}]);
@@ -93,7 +95,7 @@ app.get('/delete', async (req, res) => {
 
 app.get('/update', async (req, res) => {
   const { stuNo, stuName, stuDept, stuGrade, stuGender } = req.query;
-  var query = `UPDATE STUDENT SET STU_NAME = '${stuName}', STU_DEPT = '${stuDept}', STU_GRADE = '${stuGrade}', STU_GENDER = '${stuGender}'`
+  var query = `UPDATE STUDENT SET STU_NAME = '${stuName}', STU_DEPT = '${stuDept}', STU_GRADE = '${stuGrade}', STU_GENDER = '${stuGender}'  WHERE STU_NO = '${stuNo}'`
   try {
     await connection.execute(
       query, [], { autoCommit: true }
